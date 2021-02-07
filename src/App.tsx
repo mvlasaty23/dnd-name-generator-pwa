@@ -116,7 +116,7 @@ function App() {
               <InputLabel id="race-select-label">Race</InputLabel>
               <Select labelId="race-select-label" id="race-select" value={race} onChange={handleRaceChange}>
                 {races.map((race) => (
-                  <MenuItem value={race.value}>{race.name}</MenuItem>
+                  <MenuItem key={race.value} value={race.value}>{race.name}</MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -130,9 +130,9 @@ function App() {
                 value={syllablesCount}
                 onChange={handleSyllablesCountChange}
               >
-                <MenuItem value={2}>Two</MenuItem>
-                <MenuItem value={3}>Three</MenuItem>
-                <MenuItem value={4}>Four</MenuItem>
+                <MenuItem key={1} value={2}>Two</MenuItem>
+                <MenuItem key={2} value={3}>Three</MenuItem>
+                <MenuItem key={3} value={4}>Four</MenuItem>
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
