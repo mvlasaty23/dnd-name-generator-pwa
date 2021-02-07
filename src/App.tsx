@@ -78,7 +78,7 @@ function App() {
       return Math.floor(Math.random() * upper + 1);
     }
     function notSame(idx: number | undefined) {
-      return (targetIdx: number): number => (idx === undefined || targetIdx != idx ? targetIdx : targetIdx - 1);
+      return (targetIdx: number): number => (idx === undefined || targetIdx !== idx ? targetIdx : targetIdx - 1);
     }
     function firstUpper(value: string): string {
       return value[0].toUpperCase() + value.slice(1);
