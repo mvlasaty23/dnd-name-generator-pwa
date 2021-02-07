@@ -15,9 +15,50 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import 'fontsource-roboto';
 import React from 'react';
 
-const prefix = ['asd', 'das', 'sad', 'def', 'fed', 'aed', 'dea', 'oid', 'dio', 'odi', 'uid'];
+const races = [
+  { name: 'Dwarf', value: 'dwarf' },
+  { name: 'Elve', value: 'elve' },
+  { name: 'Human', value: 'human' },
+];
+const dwarvish = [
+  'aza',
+  'ghal',
+  'nul',
+  'bi',
+  'zar',
+  'bun',
+  'dush',
+  'ath',
+  'ur',
+  'buz',
+  'un',
+  'fel',
+  'ak',
+  'gun',
+  'du',
+  'gab',
+  'il',
+  'an',
+  'gath',
+  'ol',
+  'gam',
+  'il',
+  'zir',
+  'ak',
+  'da',
+  'bad',
+  'ki',
+  'bil',
+  'aed',
+];
+const elvish = ['tree', 'hugger', 'stupid', 'name', 'ish'];
+const human = ['bli', 'blah', 'blub', 'foo', 'bar'];
 
-const suffix = ['asd', 'das', 'sad', 'def', 'fed', 'aed', 'dea', 'oid', 'dio', 'odi', 'uid'];
+const languages: { [k: string]: string[] } = {
+  dwarf: dwarvish,
+  elve: elvish,
+  human: human,
+};
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,12 +84,12 @@ function App() {
       return value[0].toUpperCase() + value.slice(1);
     }
     const indezes = syllables.map((syllable) => randomizeIndex(syllable.length - 1));
-    return firstUpper(syllables.map((syllable, idx) => syllable[notSame(indezes[idx - 1])(indezes[idx])]).join(' '));
+    return firstUpper(syllables.map((syllable, idx) => syllable[notSame(indezes[idx - 1])(indezes[idx])]).join(''));
   }
 
   const classes = useStyles();
 
-  const [race, setRace] = React.useState('dwarf');
+  const [race, setRace] = React.useState(races[0].value);
   const handleRaceChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setRace(event.target.value as string);
   };
@@ -74,9 +115,9 @@ function App() {
             <FormControl className={classes.formControl}>
               <InputLabel id="race-select-label">Race</InputLabel>
               <Select labelId="race-select-label" id="race-select" value={race} onChange={handleRaceChange}>
-                <MenuItem value="dwarf">Dwarf</MenuItem>
-                <MenuItem value="elve">Elve</MenuItem>
-                <MenuItem value="human">Human</MenuItem>
+                {races.map((race) => (
+                  <MenuItem value={race.value}>{race.name}</MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
@@ -98,7 +139,7 @@ function App() {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => setName(generateRandomName(prefix, suffix))}
+                onClick={() => setName(generateRandomName(...Array(syllablesCount).fill(languages[race])))}
                 startIcon={<RefreshIcon />}
                 disableElevation
               >
