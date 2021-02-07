@@ -14,7 +14,6 @@ import {
 import RefreshIcon from '@material-ui/icons/Refresh';
 import 'fontsource-roboto';
 import React from 'react';
-import './App.css';
 
 const prefix = ['asd', 'das', 'sad', 'def', 'fed', 'aed', 'dea', 'oid', 'dio', 'odi', 'uid'];
 
@@ -22,12 +21,12 @@ const suffix = ['asd', 'das', 'sad', 'def', 'fed', 'aed', 'dea', 'oid', 'dio', '
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    app: {
+      textAlign: 'center',
+    },
     formControl: {
       margin: theme.spacing(1),
       minWidth: 120,
-    },
-    generateBtn: {
-      textAlign: 'left',
     },
   }),
 );
@@ -44,12 +43,12 @@ function App() {
       return value[0].toUpperCase() + value.slice(1);
     }
     const indezes = syllables.map((syllable) => randomizeIndex(syllable.length - 1));
-    return syllables.map((syllable, idx) => syllable[notSame(indezes[idx - 1])(indezes[idx])]).join(' ');
+    return firstUpper(syllables.map((syllable, idx) => syllable[notSame(indezes[idx - 1])(indezes[idx])]).join(' '));
   }
 
   const classes = useStyles();
 
-  const [race, setRace] = React.useState('');
+  const [race, setRace] = React.useState('dwarf');
   const handleRaceChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setRace(event.target.value as string);
   };
@@ -62,11 +61,11 @@ function App() {
   const [name, setName] = React.useState('');
 
   return (
-    <main className="App">
+    <main className={classes.app}>
       <Typography variant="h3" component="h2" gutterBottom>
         Name Generator
       </Typography>
-      <form className={classes.formControl}>
+      <form>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <FormControl className={classes.formControl}>
@@ -83,7 +82,7 @@ function App() {
           </Grid>
           <Grid item xs={12}>
             <FormControl className={classes.formControl}>
-              <InputLabel id="syllables-count-select-label">Sybllables</InputLabel>
+              <InputLabel id="syllables-count-select-label">Syllables</InputLabel>
               <Select
                 labelId="syllables-count-select-label"
                 id="syllables-count-select"
