@@ -4,6 +4,9 @@ import {
   FormControl,
   Grid,
   InputLabel,
+  List,
+  ListItem,
+  ListItemText,
   makeStyles,
   MenuItem,
   Select,
@@ -14,50 +17,37 @@ import {
 import RefreshIcon from '@material-ui/icons/Refresh';
 import 'fontsource-roboto';
 import React from 'react';
+import { Syllables, Languages, races, raceToLanguage } from './components/model';
+import dwarvish from './components/language/dwarvish';
+import elvish from './components/language/elvish';
+import common from './components/language/common';
+import draconinc from './components/language/draconic';
+import gnomish from './components/language/gnomish';
+import hafling from './components/language/hafling';
+import orc from './components/language/orc';
+import abyssal from './components/language/abyssal';
 
-const races = [
+const raceToSelectMapping: { name: string; value: keyof typeof races }[] = [
+  { name: 'Dragonborn', value: 'dragonborn' },
   { name: 'Dwarf', value: 'dwarf' },
-  { name: 'Elve', value: 'elve' },
+  { name: 'Elf', value: 'elf' },
+  { name: 'Gnome', value: 'gnome' },
+  { name: 'Hafling', value: 'hafling' },
+  { name: 'Half-Elf', value: 'halfElf' },
+  { name: 'Half-Orc', value: 'halfOrc' },
   { name: 'Human', value: 'human' },
+  { name: 'Tiefling', value: 'tiefling' },
 ];
-const dwarvish = [
-  'aza',
-  'ghal',
-  'nul',
-  'bi',
-  'zar',
-  'bun',
-  'dush',
-  'ath',
-  'ur',
-  'buz',
-  'un',
-  'fel',
-  'ak',
-  'gun',
-  'du',
-  'gab',
-  'il',
-  'an',
-  'gath',
-  'ol',
-  'gam',
-  'il',
-  'zir',
-  'ak',
-  'da',
-  'bad',
-  'ki',
-  'bil',
-  'aed',
-];
-const elvish = ['tree', 'hugger', 'stupid', 'name', 'ish'];
-const human = ['bli', 'blah', 'blub', 'foo', 'bar'];
-
-const languages: { [k: string]: string[] } = {
+const languages: Languages = {
+  dragonborn: draconinc,
   dwarf: dwarvish,
-  elve: elvish,
-  human: human,
+  elf: elvish,
+  gnome: gnomish,
+  hafling: hafling,
+  halfElf: elvish,
+  halfOrc: orc,
+  human: common,
+  tiefling: abyssal,
 };
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -69,11 +59,14 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(1),
       minWidth: 120,
     },
+    genratedNameListing: {
+      backgroundColor: theme.palette.background.paper,
+    },
   }),
 );
 
 function App() {
-  function generateRandomName(...syllables: string[][]): string {
+  function generateRandomName(...syllables: Syllables[]): string {
     function randomizeIndex(upper: number): number {
       return Math.floor(Math.random() * upper + 1);
     }
@@ -89,9 +82,9 @@ function App() {
 
   const classes = useStyles();
 
-  const [race, setRace] = React.useState(races[0].value);
+  const [race, setRace] = React.useState(raceToSelectMapping[0].value);
   const handleRaceChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setRace(event.target.value as string);
+    setRace(event.target.value as keyof typeof races);
   };
 
   const [syllablesCount, setSyllablesCount] = React.useState(2);
@@ -99,23 +92,35 @@ function App() {
     setSyllablesCount(event.target.value as number);
   };
 
-  const [name, setName] = React.useState('');
+  type NameAndLanguage = { name: string; language: string };
+  const [generatedNames, setGeneratedNames] = React.useState([] as NameAndLanguage[]);
+
+  const [name, setName] = React.useState({ name: '', language: '' });
+  const handleGenerateName = () => {
+    if (name.name !== '') {
+      setGeneratedNames([{ name: name.name, language: name.language }, ...generatedNames]);
+    }
+    setName({
+      name: generateRandomName(...Array(syllablesCount).fill(languages[race])),
+      language: raceToLanguage[race],
+    });
+  };
 
   return (
     <main className={classes.app}>
       <Typography variant="h3" component="h2" gutterBottom>
-        Name Generator
+        DnD Name Generator
       </Typography>
       <form>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <FormControl className={classes.formControl}>
-              <TextField id="name-input" label="Randomized name" value={name} />
+              <TextField id="name-input" label="Randomized name" value={name.name} />
             </FormControl>
             <FormControl className={classes.formControl}>
               <InputLabel id="race-select-label">Race</InputLabel>
               <Select labelId="race-select-label" id="race-select" value={race} onChange={handleRaceChange}>
-                {races.map((race) => (
+                {raceToSelectMapping.map((race) => (
                   <MenuItem key={race.value} value={race.value}>
                     {race.name}
                   </MenuItem>
@@ -147,13 +152,24 @@ function App() {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => setName(generateRandomName(...Array(syllablesCount).fill(languages[race])))}
+                onClick={handleGenerateName}
                 startIcon={<RefreshIcon />}
                 disableElevation
               >
                 Generate
               </Button>
             </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <div className={classes.genratedNameListing}>
+              <List>
+                {generatedNames.map((generated) => (
+                  <ListItem key={generated.name}>
+                    <ListItemText primary={generated.name} secondary={generated.language} />
+                  </ListItem>
+                ))}
+              </List>
+            </div>
           </Grid>
         </Grid>
       </form>
