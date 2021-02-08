@@ -25,7 +25,7 @@ import draconinc from './components/language/draconic';
 import gnomish from './components/language/gnomish';
 import hafling from './components/language/hafling';
 import orc from './components/language/orc';
-import abyssal from './components/language/abyssal';
+import infernal from './components/language/infernal';
 
 const raceToSelectMapping: { name: string; value: keyof typeof races }[] = [
   { name: 'Dragonborn', value: 'dragonborn' },
@@ -47,7 +47,7 @@ const languages: Languages = {
   halfElf: elvish,
   halfOrc: orc,
   human: common,
-  tiefling: abyssal,
+  tiefling: infernal,
 };
 
 const useStyles = makeStyles((theme: Theme) =>
