@@ -1,4 +1,4 @@
-import { Syllables, LanguagePack } from '../model';
+import { LanguagePack } from '../model';
 
 const dwarvishSyllables = {
   prefix: [

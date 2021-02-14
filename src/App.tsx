@@ -17,8 +17,8 @@ import {
 import RefreshIcon from '@material-ui/icons/Refresh';
 import 'fontsource-roboto';
 import React from 'react';
-import dwarvish from './components/language/dwarvish';
-import { LanguagePack, LanguageRule, Languages, races, raceToLanguage } from './components/model';
+import languages from './components/language';
+import { LanguagePack, LanguageRule, races, raceToLanguage } from './components/model';
 
 const raceToSelectMapping: { name: string; value: keyof typeof races }[] = [
   { name: 'Dragonborn', value: 'dragonborn' },
@@ -31,21 +31,6 @@ const raceToSelectMapping: { name: string; value: keyof typeof races }[] = [
   { name: 'Human', value: 'human' },
   { name: 'Tiefling', value: 'tiefling' },
 ];
-const notImplementedLanguage = {
-  rules: [],
-  syllables: { male: { prefix: [], suffix: [], infix: [] }, female: { prefix: [], suffix: [], infix: [] } },
-};
-const languages: Languages = {
-  dragonborn: notImplementedLanguage,
-  dwarf: dwarvish,
-  elf: notImplementedLanguage,
-  gnome: notImplementedLanguage,
-  hafling: notImplementedLanguage,
-  halfElf: notImplementedLanguage,
-  halfOrc: notImplementedLanguage,
-  human: notImplementedLanguage,
-  tiefling: notImplementedLanguage,
-};
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -75,7 +60,7 @@ function App() {
       let syllable = '';
       while (syllable === '') {
         const randomSyllable = syllables[randomizedIndex(syllables.length - 1)];
-        if (rules.find((rule) => !rule(syllable, word)) === undefined) {
+        if (rules.find((rule) => !rule(randomSyllable, word)) === undefined) {
           syllable = randomSyllable;
         }
       }
