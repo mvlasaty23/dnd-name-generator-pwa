@@ -17,15 +17,8 @@ import {
 import RefreshIcon from '@material-ui/icons/Refresh';
 import 'fontsource-roboto';
 import React from 'react';
-import { Syllables, Languages, races, raceToLanguage } from './components/model';
 import dwarvish from './components/language/dwarvish';
-import elvish from './components/language/elvish';
-import common from './components/language/common';
-import draconinc from './components/language/draconic';
-import gnomish from './components/language/gnomish';
-import hafling from './components/language/hafling';
-import orc from './components/language/orc';
-import infernal from './components/language/infernal';
+import { LanguagePack, LanguageRule, Languages, races, raceToLanguage } from './components/model';
 
 const raceToSelectMapping: { name: string; value: keyof typeof races }[] = [
   { name: 'Dragonborn', value: 'dragonborn' },
@@ -38,16 +31,20 @@ const raceToSelectMapping: { name: string; value: keyof typeof races }[] = [
   { name: 'Human', value: 'human' },
   { name: 'Tiefling', value: 'tiefling' },
 ];
+const notImplementedLanguage = {
+  rules: [],
+  syllables: { male: { prefix: [], suffix: [], infix: [] }, female: { prefix: [], suffix: [], infix: [] } },
+};
 const languages: Languages = {
-  dragonborn: draconinc,
+  dragonborn: notImplementedLanguage,
   dwarf: dwarvish,
-  elf: elvish,
-  gnome: gnomish,
-  hafling: hafling,
-  halfElf: elvish,
-  halfOrc: orc,
-  human: common,
-  tiefling: infernal,
+  elf: notImplementedLanguage,
+  gnome: notImplementedLanguage,
+  hafling: notImplementedLanguage,
+  halfElf: notImplementedLanguage,
+  halfOrc: notImplementedLanguage,
+  human: notImplementedLanguage,
+  tiefling: notImplementedLanguage,
 };
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -66,18 +63,36 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 function App() {
-  function generateRandomName(...syllables: Syllables[]): string {
-    function randomizeIndex(upper: number): number {
+  function generateRandomName(
+    syllableCount: number,
+    languagePack: LanguagePack,
+    genderSelector: keyof LanguagePack['syllables'],
+  ) {
+    function randomizedIndex(upper: number): number {
       return Math.floor(Math.random() * upper + 1);
     }
-    function notSame(idx: number | undefined) {
-      return (targetIdx: number): number => (idx === undefined || targetIdx !== idx ? targetIdx : targetIdx - 1);
+    function selectNextSyllable(syllables: string[], word: string[], rules: LanguageRule[]) {
+      let syllable = '';
+      while (syllable === '') {
+        const randomSyllable = syllables[randomizedIndex(syllables.length - 1)];
+        if (rules.find((rule) => !rule(syllable, word)) === undefined) {
+          syllable = randomSyllable;
+        }
+      }
+      return syllable;
     }
     function firstUpper(value: string): string {
       return value[0].toUpperCase() + value.slice(1);
     }
-    const indezes = syllables.map((syllable) => randomizeIndex(syllable.length - 1));
-    return firstUpper(syllables.map((syllable, idx) => syllable[notSame(indezes[idx - 1])(indezes[idx])]).join(''));
+
+    const language = languagePack.syllables[genderSelector];
+    const word = [language.prefix[randomizedIndex(language.prefix.length - 1)]];
+    for (let i = 0; i < syllableCount - 1; i++) {
+      word.push(
+        selectNextSyllable(syllableCount > 2 && i === 0 ? language.infix : language.suffix, word, languagePack.rules),
+      );
+    }
+    return firstUpper(word.join(''));
   }
 
   const classes = useStyles();
@@ -101,7 +116,7 @@ function App() {
       setGeneratedNames([{ name: name.name, language: name.language }, ...generatedNames]);
     }
     setName({
-      name: generateRandomName(...Array(syllablesCount).fill(languages[race])),
+      name: generateRandomName(syllablesCount, languages[race], 'male'),
       language: raceToLanguage[race],
     });
   };

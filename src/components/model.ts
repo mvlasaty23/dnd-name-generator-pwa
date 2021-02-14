@@ -25,5 +25,21 @@ export const raceToLanguage: { [k in keyof typeof races]: string } = {
 };
 
 export type Languages = {
-  [k in keyof typeof races]: Syllables;
+  [k in keyof typeof races]: LanguagePack;
 };
+
+interface SyllableRoot {
+  prefix: string[];
+  infix: string[];
+  suffix: string[];
+}
+
+export type LanguageRule = (nextSyllable: string, word: Syllables) => boolean;
+
+export interface LanguagePack {
+  rules: LanguageRule[];
+  syllables: {
+    male: SyllableRoot;
+    female: SyllableRoot;
+  };
+}
