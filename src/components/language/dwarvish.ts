@@ -123,9 +123,4 @@ const dwarvish_new: LanguagePack = {
     female: dwarvishSyllables,
   },
 };
-const dwarvish: Syllables = [
-  ...dwarvish_new.syllables.male.prefix,
-  ...dwarvish_new.syllables.male.infix,
-  ...dwarvish_new.syllables.male.suffix,
-];
 export default dwarvish_new;
