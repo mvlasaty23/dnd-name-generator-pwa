@@ -107,16 +107,22 @@ const dwarvishSyllables = {
     'tr',
   ],
 };
+function notSameVocal(vocal: 'a' | 'e' | 'i' | 'o' | 'u' | 'sch' | 'ck') {
+  return (syllable: string, word: string[]) => !(syllable.startsWith(vocal) && word[word.length - 1].endsWith(vocal));
+}
+function onlyUniqueSyllables() {
+  return (syllable: string, word: string[]) => word.find((el) => el === syllable) === undefined;
+}
 const dwarvish_new: LanguagePack = {
   rules: [
-    (syllable, word) => word.findIndex((el) => el === syllable) === -1,
-    (syllable, word) => (word[word.length - 1].endsWith('a') && !syllable.startsWith('a')) || true,
-    (syllable, word) => (word[word.length - 1].endsWith('e') && !syllable.startsWith('e')) || true,
-    (syllable, word) => (word[word.length - 1].endsWith('u') && !syllable.startsWith('u')) || true,
-    (syllable, word) => (word[word.length - 1].endsWith('o') && !syllable.startsWith('o')) || true,
-    (syllable, word) => (word[word.length - 1].endsWith('i') && !syllable.startsWith('i')) || true,
-    (syllable, word) => (word[word.length - 1].endsWith('sch') && !syllable.startsWith('sch')) || true,
-    (syllable, word) => (word[word.length - 1].endsWith('ck') && !syllable.startsWith('ck')) || true,
+    onlyUniqueSyllables(),
+    notSameVocal('a'),
+    notSameVocal('e'),
+    notSameVocal('i'),
+    notSameVocal('o'),
+    notSameVocal('u'),
+    notSameVocal('sch'),
+    notSameVocal('ck'),
   ],
   syllables: {
     male: dwarvishSyllables,
