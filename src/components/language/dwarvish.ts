@@ -1,4 +1,5 @@
 import { LanguagePack } from '../model';
+import { distinct, notSameSubsequentComposite, notSameSubsequentVocal } from './common-rule';
 
 const dwarvishSyllables = {
   prefix: [
@@ -107,26 +108,11 @@ const dwarvishSyllables = {
     'tr',
   ],
 };
-function notSameVocal(vocal: 'a' | 'e' | 'i' | 'o' | 'u' | 'sch' | 'ck') {
-  return (syllable: string, word: string[]) => !(syllable.startsWith(vocal) && word[word.length - 1].endsWith(vocal));
-}
-function onlyUniqueSyllables() {
-  return (syllable: string, word: string[]) => word.find((el) => el === syllable) === undefined;
-}
-const dwarvish_new: LanguagePack = {
-  rules: [
-    onlyUniqueSyllables(),
-    notSameVocal('a'),
-    notSameVocal('e'),
-    notSameVocal('i'),
-    notSameVocal('o'),
-    notSameVocal('u'),
-    notSameVocal('sch'),
-    notSameVocal('ck'),
-  ],
+const dwarvish: LanguagePack = {
+  rules: [distinct, ...notSameSubsequentVocal, ...notSameSubsequentComposite],
   syllables: {
     male: dwarvishSyllables,
     female: dwarvishSyllables,
   },
 };
-export default dwarvish_new;
+export default dwarvish;
