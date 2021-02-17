@@ -34,12 +34,14 @@ interface SyllableRoot {
   suffix: string[];
 }
 
+// Returns false on success, and true if the next syllable is not eligble for the given word
+// TODO: feels odd maybe change this
 export type LanguageRule = (nextSyllable: string, word: Syllables) => boolean;
+export type Gender = 'male' | 'female';
 
 export interface LanguagePack {
   rules: LanguageRule[];
   syllables: {
-    male: SyllableRoot;
-    female: SyllableRoot;
+    [k in Gender]: SyllableRoot;
   };
 }
