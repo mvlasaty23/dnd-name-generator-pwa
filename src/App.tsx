@@ -1,5 +1,6 @@
 import {
   Button,
+  ButtonGroup,
   createStyles,
   FormControl,
   Grid,
@@ -48,8 +49,21 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(1),
       minWidth: 120,
     },
+    raceSelect: {
+      margin: theme.spacing(1),
+      minWidth: 145,
+    },
+    syllablesSlider: {
+      margin: theme.spacing(1),
+      minWidth: 300,
+    },
     genratedNameListing: {
+      margin: 'auto',
+      maxHeight: 'calc(40vh - 5px)',
+      maxWidth: 360,
       backgroundColor: theme.palette.background.paper,
+      position: 'relative',
+      overflow: 'auto',
     },
   }),
 );
@@ -63,14 +77,10 @@ function App() {
   };
 
   const [gender, setGender] = React.useState(genderToSelectMapping[0].value);
-  const handleGenderChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setGender(event.target.value as Gender);
-  };
 
   const [syllablesCount, setSyllablesCount] = React.useState(2);
-  const handleSyllablesCountChange = (event: React.ChangeEvent<any>, value: number | number[]) => {
+  const handleSyllablesCountChange = (event: React.ChangeEvent<any>, value: number | number[]) =>
     setSyllablesCount(value as number);
-  };
 
   type NameAndLanguage = { name: string; language: string };
   const [generatedNames, setGeneratedNames] = React.useState([] as NameAndLanguage[]);
@@ -81,20 +91,20 @@ function App() {
       setGeneratedNames([{ name: name.name, language: name.language }, ...generatedNames]);
     }
     setName({
-      name: generateRandomName(syllablesCount, languages[race], 'male'),
+      name: generateRandomName(syllablesCount, languages[race], gender),
       language: raceToLanguage[race],
     });
   };
 
   return (
     <main className={classes.app}>
-      <Typography variant="h3" component="h2" gutterBottom>
-        DnD Name Generator
+      <Typography variant="h3" component="h3" gutterBottom>
+        Name Generator
       </Typography>
       <form>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <FormControl className={classes.formControl}>
+            <FormControl className={classes.raceSelect}>
               <InputLabel id="race-select-label">Race</InputLabel>
               <Select labelId="race-select-label" id="race-select" value={race} onChange={handleRaceChange}>
                 {raceToSelectMapping.map((race) => (
@@ -105,18 +115,22 @@ function App() {
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabel id="gender-select-label">Gender</InputLabel>
-              <Select labelId="gender-select-label" id="gender-select" value={gender} onChange={handleGenderChange}>
+              <ButtonGroup color="primary" aria-label="outlined primary button group">
                 {genderToSelectMapping.map(({ name, value }) => (
-                  <MenuItem key={value} value={value}>
+                  <Button
+                    key={value}
+                    variant={gender === value ? 'contained' : 'outlined'}
+                    color="primary"
+                    onClick={() => setGender(value)}
+                  >
                     {name}
-                  </MenuItem>
+                  </Button>
                 ))}
-              </Select>
+              </ButtonGroup>
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            <FormControl className={classes.formControl}>
+            <FormControl className={classes.syllablesSlider}>
               <Typography id="syllables-slider" gutterBottom>
                 Syllables
               </Typography>
