@@ -18,7 +18,7 @@ export function notAfter(ending: string, nextSub: string) {
 }
 /**
  * Ensures following syllables dont end/begin with the same defnied substring
- * @param vocal Substring head and tail of the last syllables 
+ * @param vocal Substring head and tail of the last syllables
  */
 export function notSameAfter<T extends string = Vocals | CompositeSyllable>(vocal: T) {
   return notAfter(vocal, vocal);
@@ -50,9 +50,9 @@ export function notMoreThan(substring: string, count: number) {
 }
 /**
  * Ensures a max occurences of the given substring in the name except for given combination
- * @param substring 
- * @param count 
- * @param except 
+ * @param substring
+ * @param count
+ * @param except
  */
 export function notMoreThanExcept(substring: string, count: number, except: string) {
   return (syllable: string, word: string[]) =>
