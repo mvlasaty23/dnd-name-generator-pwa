@@ -10,113 +10,98 @@ import {
   uniqueSubstring,
 } from './common-rule';
 
+interface TestCase {
+  word: string[];
+  nextSyllable: string;
+  expected: boolean;
+}
+interface TestCases {
+  title: string;
+  testCases: TestCase[];
+  rules: LanguageRule[];
+}
 describe('Common Language Rule', () => {
-  describe('Not Same After', () => {
-    const rules = [...notSameSubsequentVocal, ...notSameSubsequentComposite];
-    [
-      { word: ['da'], nextSyllable: 'al' },
-      { word: ['de'], nextSyllable: 'el' },
-      { word: ['di'], nextSyllable: 'il' },
-      { word: ['do'], nextSyllable: 'ol' },
-      { word: ['du'], nextSyllable: 'ul' },
-      { word: ['asch'], nextSyllable: 'sche' },
-      { word: ['ack'], nextSyllable: 'cke' },
-      { word: ['ach'], nextSyllable: 'che' },
-      { word: ['atz'], nextSyllable: 'tze' },
-      { word: ['ath'], nextSyllable: 'the' },
-      { word: ['ast'], nextSyllable: 'ste' },
-    ].forEach((testCase) =>
-      it(`should not allow syllable[${testCase.nextSyllable}] to be added to word[${testCase.word}]`, () => {
-        expect(evaluateRules(rules, testCase.word, testCase.nextSyllable)).not.toBe(-1);
-      }),
-    );
-  });
-
-  describe('Not after', () => {
-    const rules = [notAfter('d', 'd'), notAfter('t', 'd'), notAfter('th', 'd')];
-    it('should not allow next syllable starting with d after a syllable ending with d, t or th', () => {
-      // Given
-      const word1 = ['ad'];
-      const word2 = ['at'];
-      const word3 = ['ath'];
-      const word4 = ['al'];
-      const nextSyllable = 'da';
-
-      // When + Then
-      expect(evaluateRules(rules, word1, nextSyllable)).not.toBe(-1);
-      expect(evaluateRules(rules, word2, nextSyllable)).not.toBe(-1);
-      expect(evaluateRules(rules, word3, nextSyllable)).not.toBe(-1);
-      expect(evaluateRules(rules, word4, nextSyllable)).toBe(-1);
-    });
-  });
-
-  describe('Unique Substring', () => {
-    const rules = [uniqueSubstring('y')];
-    it('should not allow syllables containing the unique substring', () => {
-      // Given
-      const word1 = ['asy'];
-      const word2 = ['as'];
-      const nextSyllable = 'by';
-      // When + Then
-      expect(evaluateRules(rules, word1, nextSyllable)).not.toBe(-1);
-      expect(evaluateRules(rules, word2, nextSyllable)).toBe(-1);
-    });
-  });
-
-  describe('Not same startin', () => {
-    const rules = [notSameStarting('c')];
-    it('should not allow subsequent syllables with the same start', () => {
-      // Given
-      const word1 = ['cy'];
-      const word2 = ['ad', 'sa'];
-      const nextSyllable = 'ca';
-      // When + Then
-      expect(evaluateRules(rules, word1, nextSyllable)).not.toBe(-1);
-      expect(evaluateRules(rules, word2, nextSyllable)).toBe(-1);
-    });
-  });
-
-  describe('Not more than', () => {
-    const rules = [notMoreThan('i', 3)];
-    it('should not allow more occurences of the given substring', () => {
-      // Given
-      const word1 = ['ci', 'saii'];
-      const word2 = ['adi', 'sai'];
-      const nextSyllable = 'ci';
-      // When + Then
-      expect(evaluateRules(rules, word1, nextSyllable)).not.toBe(-1);
-      expect(evaluateRules(rules, word2, nextSyllable)).toBe(-1);
-    });
-  });
-
-  describe('Not more than except', () => {
-    const rules = [notMoreThanExcept('a', 3, 'ae')];
-    it('should not allow more occurences of the given substring except for defined combination', () => {
-      // Given
-      const word1 = ['ca', 'sama'];
-      const word2 = ['cae', 'sai'];
-      const nextSyllable = 'ma';
-      // When + Then
-      expect(evaluateRules(rules, word1, nextSyllable)).not.toBe(-1);
-      expect(evaluateRules(rules, word2, nextSyllable)).toBe(-1);
-    });
-  });
-
-  describe('Distinct', () => {
-    const rules = [distinct];
-    [
-      { word: ['asd'], nextSyllable: 'asd' },
-      { word: ['daf', 'asd'], nextSyllable: 'asd' },
-      { word: ['asd', 'daf'], nextSyllable: 'asd' },
-    ].forEach(({ word, nextSyllable }) =>
-      it(`should not allow duplicat[${nextSyllable}] in word[${word}]`, () => {
-        expect(evaluateRules(rules, word, nextSyllable)).not.toBe(-1);
-      }),
-    );
-    it('should allow unique syllables', () => {
-      expect(evaluateRules(rules, ['asd', 'daf'], 'blah')).toBe(-1);
-    });
-  });
+  const tests: TestCases[] = [
+    {
+      title: 'Distinct',
+      testCases: [
+        { word: ['asd'], nextSyllable: 'asd', expected: false },
+        { word: ['daf', 'asd'], nextSyllable: 'asd', expected: false },
+        { word: ['asd', 'daf'], nextSyllable: 'asd', expected: false },
+        { word: ['la', 'asd', 'daf'], nextSyllable: 'asd', expected: false },
+        { word: ['asd', 'daf'], nextSyllable: 'blah', expected: true },
+      ],
+      rules: [distinct],
+    },
+    {
+      title: 'Not after',
+      testCases: [
+        { word: ['ad'], nextSyllable: 'da', expected: false },
+        { word: ['at'], nextSyllable: 'da', expected: false },
+        { word: ['ath'], nextSyllable: 'da', expected: false },
+        { word: ['al'], nextSyllable: 'da', expected: true },
+      ],
+      rules: [notAfter('d', 'd'), notAfter('t', 'd'), notAfter('th', 'd')],
+    },
+    {
+      title: 'Not Same After',
+      testCases: [
+        { word: ['da'], nextSyllable: 'al', expected: false },
+        { word: ['de'], nextSyllable: 'el', expected: false },
+        { word: ['di'], nextSyllable: 'il', expected: false },
+        { word: ['do'], nextSyllable: 'ol', expected: false },
+        { word: ['du'], nextSyllable: 'ul', expected: false },
+        { word: ['asch'], nextSyllable: 'sche', expected: false },
+        { word: ['ack'], nextSyllable: 'cke', expected: false },
+        { word: ['ach'], nextSyllable: 'che', expected: false },
+        { word: ['atz'], nextSyllable: 'tze', expected: false },
+        { word: ['ath'], nextSyllable: 'the', expected: false },
+        { word: ['ast'], nextSyllable: 'ste', expected: false },
+        { word: ['ae'], nextSyllable: 'ste', expected: true },
+      ],
+      rules: [...notSameSubsequentVocal, ...notSameSubsequentComposite],
+    },
+    {
+      title: 'Unique Substring',
+      testCases: [
+        { word: ['asy'], nextSyllable: 'by', expected: false },
+        { word: ['as'], nextSyllable: 'by', expected: true },
+      ],
+      rules: [uniqueSubstring('y')],
+    },
+    {
+      title: 'Not same starting',
+      testCases: [
+        { word: ['cy'], nextSyllable: 'ca', expected: false },
+        { word: ['ad', 'sa'], nextSyllable: 'ca', expected: true },
+      ],
+      rules: [notSameStarting('c')],
+    },
+    {
+      title: 'Not more than',
+      testCases: [
+        { word: ['ci', 'saii'], nextSyllable: 'ci', expected: false },
+        { word: ['adi', 'sai'], nextSyllable: 'ci', expected: true },
+      ],
+      rules: [notMoreThan('i', 3)],
+    },
+    {
+      title: 'Not more than except',
+      testCases: [
+        { word: ['ca', 'sama'], nextSyllable: 'ma', expected: false },
+        { word: ['cae', 'sai'], nextSyllable: 'ma', expected: true },
+      ],
+      rules: [notMoreThanExcept('a', 3, 'ae')],
+    },
+  ];
+  tests.forEach(({ title, testCases, rules }) =>
+    describe(title, () => {
+      testCases.forEach(({ word, nextSyllable, expected }) =>
+        it(`should ${expected ? 'allow' : 'not allow'} syllable[${nextSyllable}] to be added to word[${word}]`, () =>
+          expect(evaluateRules(rules, word, nextSyllable) === -1).toBe(expected)),
+      );
+    }),
+  );
 });
 
 function evaluateRules(rules: LanguageRule[], word: string[], syllable: string) {
