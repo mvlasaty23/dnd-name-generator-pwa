@@ -21,20 +21,21 @@ export function notSameStarting(substring: string) {
 }
 export function notMoreThan(substring: string, count: number) {
   return (syllable: string, word: string[]) =>
-    !(
-      syllable.includes(substring) &&
-      word.map((w) => w.split(substring).length - 1).reduce((prev, next) => prev + next, 0) >= count
-    );
+    occurences(syllable, substring) + allOccurences(word, substring) <= count;
 }
 export function notMoreThanExcept(substring: string, count: number, except: string) {
   return (syllable: string, word: string[]) =>
-    Math.abs(syllable.split(substring).length - 1 - (syllable.split(except).length - 1)) +
-      Math.abs(
-        word.map((w) => w.split(substring).length - 1).reduce((prev, next) => prev + next, 0) -
-          word.map((w) => w.split(except).length - 1).reduce((prev, next) => prev + next, 0),
-      ) <=
+    Math.abs(occurences(syllable, substring) - occurences(syllable, except)) +
+      Math.abs(allOccurences(word, substring) - allOccurences(word, except)) <=
     count;
 }
+function allOccurences(word: string[], substring: string) {
+  return word.map((w) => occurences(w, substring)).reduce((prev, next) => prev + next, 0);
+}
+function occurences(syllable: string, substring: string) {
+  return syllable.split(substring).length - 1;
+}
+
 export const notSameSubsequentVocal = [
   notSameAfter('a'),
   notSameAfter('e'),
