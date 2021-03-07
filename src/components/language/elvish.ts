@@ -4,6 +4,7 @@ import {
   notAfter,
   notMoreThan,
   notMoreThanExcept,
+  notSameAfter,
   notSameStarting,
   notSameSubsequentVocal,
   uniqueSubstring,
@@ -13,6 +14,8 @@ const elvish: LanguagePack = {
   rules: [
     distinct,
     ...notSameSubsequentVocal,
+    notSameAfter('ae'),
+    notSameAfter('r'),
     notAfter('d', 'd'),
     notAfter('t', 'd'),
     notAfter('th', 'd'),
@@ -25,8 +28,8 @@ const elvish: LanguagePack = {
     notAfter('il', 'hil'),
     notAfter('yl', 'hil'),
     notSameStarting('c'),
-    notMoreThan('i', 3),
-    notMoreThanExcept('a', 3, 'ae'),
+    notMoreThan('i', 2),
+    notMoreThanExcept('a', 4, 'ae'),
   ],
   syllables: {
     male: {
