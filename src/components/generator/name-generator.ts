@@ -14,7 +14,7 @@ export function generateRandomName(
   for (let i = 0; i < syllableCount - 1; i++) {
     // -1 because prefix already in place
     word.push(
-      selectNextSyllable(syllableCount > 2 && i === 0 ? language.infix : language.suffix, word, languagePack.rules),
+      selectNextSyllable(i === 0 && syllableCount > 2 ? language.infix : language.suffix, word, languagePack.rules),
     );
   }
   return firstUpper(word.join(''));
@@ -24,7 +24,7 @@ export function selectNextSyllable(syllables: string[], word: string[], rules: L
   let syllable = '';
   while (syllable === '') {
     const randomSyllable = syllables[randomizedIndex(syllables.length - 1)];
-    if (rules.find((rule) => !rule(randomSyllable, word)) === undefined) {
+    if (evaluateRules(rules, word, randomSyllable) === -1) {
       syllable = randomSyllable;
     }
   }
@@ -33,4 +33,11 @@ export function selectNextSyllable(syllables: string[], word: string[], rules: L
 
 export function randomizedIndex(upper: number): number {
   return Math.floor(Math.random() * upper);
+}
+
+/**
+ * Returns the index of the failed rule or -1
+ */
+export function evaluateRules(rules: LanguageRule[], word: string[], syllable: string) {
+  return rules.findIndex((rule) => !rule(syllable, word));
 }

@@ -1,3 +1,4 @@
+import { evaluateRules } from '../generator/name-generator';
 import { LanguageRule } from '../model';
 import {
   distinct,
@@ -7,7 +8,7 @@ import {
   notSameStarting,
   notSameSubsequentComposite,
   notSameSubsequentVocal,
-  uniqueSubstring,
+  uniqueSubstring
 } from './common-rule';
 
 interface TestCase {
@@ -103,7 +104,3 @@ describe('Common Language Rule', () => {
     }),
   );
 });
-
-function evaluateRules(rules: LanguageRule[], word: string[], syllable: string) {
-  return rules.findIndex((rule) => !rule(syllable, word));
-}

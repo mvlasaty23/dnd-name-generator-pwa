@@ -8,14 +8,14 @@ describe('Name Generator', () => {
       rules: [],
       syllables: {
         male: {
-          prefix: ['ma', 'ma'],
-          infix: ['so', 'so'],
-          suffix: ['la', 'la'],
+          prefix: ['ma'],
+          infix: ['so'],
+          suffix: ['la'],
         },
         female: {
-          prefix: ['la'],
-          infix: ['ma'],
-          suffix: ['so'],
+          prefix: [],
+          infix: [],
+          suffix: [],
         },
       },
     };
@@ -31,14 +31,14 @@ describe('Name Generator', () => {
       rules: [],
       syllables: {
         male: {
-          prefix: ['ma', 'ma'],
-          infix: ['so', 'so'],
-          suffix: ['la', 'la'],
+          prefix: [],
+          infix: [],
+          suffix: [],
         },
         female: {
-          prefix: ['la', 'la'],
-          infix: ['ma', 'ma'],
-          suffix: ['so', 'so'],
+          prefix: ['la'],
+          infix: ['ma'],
+          suffix: ['so'],
         },
       },
     };
@@ -59,9 +59,9 @@ describe('Name Generator', () => {
           suffix: [],
         },
         female: {
-          prefix: ['la', 'la'],
+          prefix: ['la'],
           infix: ['ma'],
-          suffix: ['so', 'so'],
+          suffix: ['so'],
         },
       },
     };
@@ -81,9 +81,9 @@ describe('Name Generator', () => {
           suffix: [],
         },
         female: {
-          prefix: ['la', 'la'],
-          infix: ['to', 'to'], // should not be used
-          suffix: ['so', 'so'],
+          prefix: ['la'],
+          infix: [], // should not be used
+          suffix: ['so'],
         },
       },
     };
@@ -103,9 +103,9 @@ describe('Name Generator', () => {
           suffix: [],
         },
         female: {
-          prefix: ['la', 'la'],
-          infix: ['to', 'to'], // should be used
-          suffix: ['so', 'so'],
+          prefix: ['la'],
+          infix: ['to'], // should be used
+          suffix: ['so'],
         },
       },
     };
@@ -126,9 +126,9 @@ describe('Name Generator', () => {
           suffix: [],
         },
         female: {
-          prefix: ['la', 'la'],
+          prefix: ['la'],
           infix: [],
-          suffix: ['so', 'so'],
+          suffix: ['so'],
         },
       },
     };
@@ -151,7 +151,8 @@ describe('Syllable Lexer', () => {
   });
 });
 describe('Randomized Index', () => {
-  it('should return a random integer with upper bound', () => {
-    expect(randomizedIndex(0)).toEqual(0);
-  });
+  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].forEach((upper) =>
+    it(`should return a random integer within upper bound[0 - ${upper}]`, () =>
+      expect(randomizedIndex(upper)).toBeLessThanOrEqual(upper)),
+  );
 });
