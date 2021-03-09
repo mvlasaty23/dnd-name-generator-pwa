@@ -31,6 +31,6 @@ export function selectNextSyllable(syllables: string[], word: string[], rules: L
   return syllable;
 }
 
-function randomizedIndex(upper: number): number {
-  return Math.floor(Math.random() * upper + 1);
+export function randomizedIndex(upper: number): number {
+  return Math.floor(Math.random() * upper);
 }

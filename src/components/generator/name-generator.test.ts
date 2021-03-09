@@ -1,5 +1,5 @@
 import { LanguagePack, LanguageRule, Syllables } from '../model';
-import { generateRandomName, selectNextSyllable } from './name-generator';
+import { generateRandomName, randomizedIndex, selectNextSyllable } from './name-generator';
 
 describe('Name Generator', () => {
   it('should generate a male name', () => {
@@ -138,7 +138,6 @@ describe('Name Generator', () => {
     expect(mockRule).toBeCalled();
   });
 });
-// TODO: refactor out lexer and radomizedIndex for mocking?
 describe('Syllable Lexer', () => {
   it('should return the next syllable', () => {
     // Given
@@ -149,5 +148,10 @@ describe('Syllable Lexer', () => {
     const nextSyllable = selectNextSyllable(syllables, word, rules);
     // Then
     expect(nextSyllable).toBe(syllables[0]);
+  });
+});
+describe('Randomized Index', () => {
+  it('should return a random integer with upper bound', () => {
+    expect(randomizedIndex(0)).toEqual(0);
   });
 });
