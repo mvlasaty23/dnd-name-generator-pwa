@@ -114,6 +114,28 @@ describe('Name Generator', () => {
     // Then
     expect(generatedName).toContain('to');
   });
+  it('should generate a four syllable name with two infix', () => {
+    // Given
+    const languagePack: LanguagePack = {
+      rules: [],
+      syllables: {
+        male: {
+          prefix: [],
+          infix: [],
+          suffix: [],
+        },
+        female: {
+          prefix: ['la'],
+          infix: ['to', 'to'], // should be used
+          suffix: ['so'],
+        },
+      },
+    };
+    // When
+    const generatedName = generateRandomName(4, languagePack, 'female');
+    // Then
+    expect(generatedName).toBe('Latotoso');
+  });
   it('should generate a name using language rules', () => {
     // Given
     const mockRule = jest.fn((_: string, __: Syllables) => true);
@@ -156,3 +178,4 @@ describe('Randomized Index', () => {
       expect(randomizedIndex(upper)).toBeLessThanOrEqual(upper)),
   );
 });
+

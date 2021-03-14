@@ -28,16 +28,18 @@ export type Languages = {
   [k in keyof typeof races]: LanguagePack;
 };
 
-interface SyllableRoot {
+export interface SyllableRoot {
   prefix: string[];
   infix: string[];
   suffix: string[];
 }
 
-// Returns false on success, and true if the next syllable is not eligble for the given word
-// TODO: feels odd maybe change this
+/**
+ * Returns false on success, and true if the next syllable is not eligble for the given word
+ */
 export type LanguageRule = (nextSyllable: string, word: Syllables) => boolean;
 export type Gender = 'male' | 'female';
+export type WordPart = keyof SyllableRoot;
 
 export interface LanguagePack {
   rules: LanguageRule[];
