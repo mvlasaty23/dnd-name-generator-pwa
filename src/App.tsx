@@ -19,9 +19,11 @@ import {
 import RefreshIcon from '@material-ui/icons/Refresh';
 import 'fontsource-roboto';
 import React from 'react';
-import { generateRandomName } from './components/generator/name-generator';
+import CytoscapeComponent from 'react-cytoscapejs';
+import { allPermutationsOf, generateRandomName } from './components/generator/name-generator';
 import languages from './components/language';
 import { Gender, races, raceToLanguage } from './components/model';
+import './App.css';
 
 const raceToSelectMapping: { name: string; value: keyof typeof races }[] = [
   { name: 'Dragonborn', value: 'dragonborn' },
@@ -95,6 +97,34 @@ function App() {
       language: raceToLanguage[race],
     });
   };
+  const prefix = languages[race].syllables[gender].prefix[6];
+  const names = allPermutationsOf({ ...languages[race].syllables[gender], prefix: [prefix] }, languages[race].rules);
+  console.log(names);
+  const elements = CytoscapeComponent.normalizeElements({
+    nodes: [
+      ...languages[race].syllables[gender].prefix
+        .filter((p) => languages[race].syllables[gender].infix.indexOf(p) === -1)
+        .map((p, index) => ({
+          data: { id: p, label: p },
+          position: { x: 0, y: index * 200 },
+        })),
+      ...languages[race].syllables[gender].infix.map((i, index) => ({
+        data: { id: i, label: i },
+        position: { x: 400, y: index * 200 },
+      })),
+      ...languages[race].syllables[gender].suffix.map((s, index) => ({
+        data: { id: s, label: s },
+        position: { x: 800, y: index * 200 },
+      })),
+    ],
+    edges: [
+      ...names.map((name) => ({ data: { source: name[0], target: name[1] } })),
+      ...names.map((name) => ({ data: { source: name[1], target: name[2] } })),
+      // {
+      //   data: { source: 'one', target: 'two', label: 'Edge from Node1 to Node2' },
+      // },
+    ],
+  });
 
   return (
     <main className={classes.app}>
@@ -172,6 +202,15 @@ function App() {
                 ))}
               </List>
             </div>
+          </Grid>
+          <Grid item xs={12}>
+            <CytoscapeComponent
+              elements={elements}
+              zoom={1}
+              style={{ border: '1px solid #ccc', width: '100%', height: '700px' }}
+              className="graph"
+              pan={{ x: 10, y: 10 }}
+            />
           </Grid>
         </Grid>
       </form>

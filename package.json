@@ -12,8 +12,10 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "cytoscape": "^3.2.19",
     "fontsource-roboto": "^4.0.0",
     "react": "^17.0.1",
+    "react-cytoscapejs": "^1.2.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.2",
     "typescript": "^4.1.2",
@@ -54,6 +56,8 @@
     ]
   },
   "devDependencies": {
+    "@types/cytoscape": "^3.14.12",
+    "@types/react-cytoscapejs": "^1.2.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-prettier": "^3.3.1",
     "prettier": "^2.2.1",

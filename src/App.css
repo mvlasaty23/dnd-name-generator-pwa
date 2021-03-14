@@ -1,0 +1,3 @@
+div.graph canvas:nth-child(3) {
+  position: relative!important;
+}
