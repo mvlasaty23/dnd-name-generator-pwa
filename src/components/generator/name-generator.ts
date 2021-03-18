@@ -65,3 +65,40 @@ export function allPermutationsOf4(syllables: SyllableRoot, rules: LanguageRule[
     .flatMap((perm) => perm.map((el) => permutationsOf(syllables.infix, el, rules)))
     .flatMap((perm) => perm.flatMap((el) => permutationsOf(syllables.suffix, el, rules)));
 }
+
+interface NonPermutations {
+  word: string[];
+  syllable: string;
+  rule: string;
+}
+function deniedRuleIndezes(rules: LanguageRule[], word: string[], syllable: string) {
+  return rules.map((rule, index) => (!rule(syllable, word) ? index : -1)).filter((idx) => idx > -1);
+}
+export function nonPermutationsOf(syllables: string[], word: string[], rules: LanguageRule[]) {
+  return syllables
+    .map((syl) => ({
+      word,
+      syllable: syl,
+      ruleIndezes: deniedRuleIndezes(rules, word, syl),
+    }))
+    .filter((nonPerms) => nonPerms.ruleIndezes.length > 0)
+    .map(({ word, syllable, ruleIndezes }) => {
+      return {
+        word,
+        syllable,
+        rule: ruleIndezes.map((ruleIndex) => rules[ruleIndex].name).join(', '),
+      };
+    });
+}
+export function allNonPermutationsOf(syllables: SyllableRoot, rules: LanguageRule[]): NonPermutations[][] {
+  return syllables.prefix.map((syl) => nonPermutationsOf(syllables.infix, [syl], rules));
+}
+export function allNonPermutationsOf3(syllables: SyllableRoot, rules: LanguageRule[]): NonPermutations[] {
+  const allNonPermsPrefixToInfix = allNonPermutationsOf(syllables, rules).flatMap((el) => el);
+  return [
+    ...allNonPermsPrefixToInfix,
+    ...allNonPermutationsOf(syllables, rules).flatMap((perm) =>
+      perm.flatMap((el) => nonPermutationsOf(syllables.suffix, [...el.word, el.syllable], rules)),
+    ),
+  ];
+}

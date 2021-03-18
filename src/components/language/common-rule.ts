@@ -5,7 +5,9 @@ export type CompositeSyllable = 'ck' | 'ch' | 'sch' | 'tz' | 'th' | 'st';
  * Ensures distinct syllables per name
  */
 function distinctSyllables() {
-  return (syllable: string, word: string[]) => word.find((el) => el === syllable) === undefined;
+  return function distinctSyllables(syllable: string, word: string[]) {
+    return word.find((el) => el === syllable) === undefined;
+  };
 }
 /**
  * Ensures following syllables dont end/begin with the defined substrings
@@ -13,8 +15,9 @@ function distinctSyllables() {
  * @param nextSub Head substring of the next syllable
  */
 export function notAfter(ending: string, nextSub: string) {
-  return (syllable: string, word: string[]) =>
-    !(syllable.startsWith(nextSub) && word[word.length - 1].endsWith(ending));
+  return function notAfter(syllable: string, word: string[]) {
+    return !(syllable.startsWith(nextSub) && word[word.length - 1].endsWith(ending));
+  };
 }
 /**
  * Ensures following syllables dont end/begin with the same defnied substring
@@ -28,16 +31,18 @@ export function notSameAfter<T extends string = Vocals | CompositeSyllable>(voca
  * @param substring Unique substring per name
  */
 export function uniqueSubstring(substring: string) {
-  return (syllable: string, word: string[]) =>
-    !(syllable.includes(substring) && word.findIndex((w) => w.includes(substring)) > -1);
+  return function uniqueSubstring(syllable: string, word: string[]) {
+    return !(syllable.includes(substring) && word.findIndex((w) => w.includes(substring)) > -1);
+  };
 }
 /**
  * Ensures following syllables dont start with the same substring
  * @param substring Syllable start
  */
 export function notSameStarting(substring: string) {
-  return (syllable: string, word: string[]) =>
-    !(syllable.startsWith(substring) && word[word.length - 1].startsWith(substring));
+  return function notSameStarting(syllable: string, word: string[]) {
+    return !(syllable.startsWith(substring) && word[word.length - 1].startsWith(substring));
+  };
 }
 /**
  * Ensures a max occurences of the given substring in the name
@@ -45,8 +50,9 @@ export function notSameStarting(substring: string) {
  * @param count
  */
 export function notMoreThan(substring: string, count: number) {
-  return (syllable: string, word: string[]) =>
-    occurences(syllable, substring) + allOccurences(word, substring) <= count;
+  return function notMoreThan(syllable: string, word: string[]) {
+    return occurences(syllable, substring) + allOccurences(word, substring) <= count;
+  };
 }
 /**
  * Ensures a max occurences of the given substring in the name except for given combination
@@ -55,10 +61,13 @@ export function notMoreThan(substring: string, count: number) {
  * @param except
  */
 export function notMoreThanExcept(substring: string, count: number, except: string) {
-  return (syllable: string, word: string[]) =>
-    Math.abs(occurences(syllable, substring) - occurences(syllable, except)) +
-      Math.abs(allOccurences(word, substring) - allOccurences(word, except)) <=
-    count;
+  return function notMoreThanExcept(syllable: string, word: string[]) {
+    return (
+      Math.abs(occurences(syllable, substring) - occurences(syllable, except)) +
+        Math.abs(allOccurences(word, substring) - allOccurences(word, except)) <=
+      count
+    );
+  };
 }
 function allOccurences(word: string[], substring: string) {
   return word.map((w) => occurences(w, substring)).reduce((prev, next) => prev + next, 0);

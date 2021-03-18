@@ -20,10 +20,10 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import 'fontsource-roboto';
 import React from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { allPermutationsOf, generateRandomName } from './components/generator/name-generator';
+import './App.css';
+import { allNonPermutationsOf3, generateRandomName } from './components/generator/name-generator';
 import languages from './components/language';
 import { Gender, races, raceToLanguage } from './components/model';
-import './App.css';
 
 const raceToSelectMapping: { name: string; value: keyof typeof races }[] = [
   { name: 'Dragonborn', value: 'dragonborn' },
@@ -97,35 +97,59 @@ function App() {
       language: raceToLanguage[race],
     });
   };
-  const prefix = languages[race].syllables[gender].prefix[6];
-  const names = allPermutationsOf({ ...languages[race].syllables[gender], prefix: [prefix] }, languages[race].rules);
-  console.log(names);
+  const prefix = languages[race].syllables[gender].prefix[20];
+  const names = allNonPermutationsOf3(
+    { ...languages[race].syllables[gender], prefix: [prefix] },
+    languages[race].rules,
+  );
   const elements = CytoscapeComponent.normalizeElements({
     nodes: [
-      ...languages[race].syllables[gender].prefix
-        .filter((p) => languages[race].syllables[gender].infix.indexOf(p) === -1)
-        .map((p, index) => ({
-          data: { id: p, label: p },
-          position: { x: 0, y: index * 200 },
-        })),
-      ...languages[race].syllables[gender].infix.map((i, index) => ({
-        data: { id: i, label: i },
-        position: { x: 400, y: index * 200 },
-      })),
-      ...languages[race].syllables[gender].suffix.map((s, index) => ({
-        data: { id: s, label: s },
-        position: { x: 800, y: index * 200 },
-      })),
+      // ...languages[race].syllables[gender].prefix
+      //   .filter((p) => languages[race].syllables[gender].infix.indexOf(p) === -1)
+      //   .map((p, index) => ({
+      //     data: { id: p, label: p },
+      //     position: { x: 0, y: index * 200 },
+      //   })),
+      // ...languages[race].syllables[gender].infix.map((i, index) => ({
+      //   data: { id: i, label: i },
+      //   position: { x: 400, y: index * 200 },
+      // })),
+      // ...languages[race].syllables[gender].suffix.map((s, index) => ({
+      //   data: { id: s, label: s },
+      //   position: { x: 800, y: index * 200 },
+      // })),
+      {
+        data: { id: '0-' + prefix, label: prefix },
+        position: { x: 0, y: 0 },
+      },
+      ...circleOf(0, languages[race].syllables[gender].infix, '1'),
+      ...circleOf(800, languages[race].syllables[gender].suffix, '2'),
     ],
     edges: [
-      ...names.map((name) => ({ data: { source: name[0], target: name[1] } })),
-      ...names.map((name) => ({ data: { source: name[1], target: name[2] } })),
+      ...names.map((n) => ({
+        data: {
+          source: n.word.length - 1 + '-' + n.word[n.word.length - 1],
+          target: n.word.length + '-' + n.syllable,
+          label: n.rule,
+        },
+      })),
+      // ...names.map((name) => ({ data: { source: name[1], target: name[2] } })),
       // {
       //   data: { source: 'one', target: 'two', label: 'Edge from Node1 to Node2' },
       // },
     ],
   });
 
+  function circleOf(center: number, syllables: string[], prefix: string) {
+    const angle = syllables.length * 10 + center;
+    return syllables.map((s, index, self) => ({
+      data: { id: prefix + '-' + s, label: s },
+      position: {
+        x: angle * Math.cos(2 * Math.PI * (index / self.length)),
+        y: angle * Math.sin(2 * Math.PI * (index / self.length)),
+      },
+    }));
+  }
   return (
     <main className={classes.app}>
       <Typography variant="h3" component="h3" gutterBottom>
@@ -206,10 +230,27 @@ function App() {
           <Grid item xs={12}>
             <CytoscapeComponent
               elements={elements}
-              zoom={1}
+              zoom={0.6}
               style={{ border: '1px solid #ccc', width: '100%', height: '700px' }}
               className="graph"
-              pan={{ x: 10, y: 10 }}
+              pan={{ x: 500, y: 400 }}
+              stylesheet={[
+                {
+                  selector: 'node',
+                  style: {
+                    width: 20,
+                    height: 20,
+                    label: 'data(label)',
+                  },
+                },
+                {
+                  selector: 'edge',
+                  style: {
+                    width: 3,
+                    label: 'data(label)',
+                  },
+                },
+              ]}
             />
           </Grid>
         </Grid>
