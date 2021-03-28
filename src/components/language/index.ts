@@ -1,6 +1,7 @@
 import { Languages } from '../model';
 import dwarvish from './dwarvish';
 import elvish from './elvish';
+import gnomish from './gnomish';
 
 const notImplementedLanguage = {
   rules: [],
@@ -11,7 +12,7 @@ const languages: Languages = {
   dragonborn: notImplementedLanguage,
   dwarf: dwarvish,
   elf: elvish,
-  gnome: notImplementedLanguage,
+  gnome: gnomish,
   hafling: notImplementedLanguage,
   halfElf: notImplementedLanguage,
   halfOrc: notImplementedLanguage,
