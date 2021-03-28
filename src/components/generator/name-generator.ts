@@ -18,17 +18,18 @@ export function generateRandomName(
         i < syllableCount - 2 && syllableCount > 2 ? language.infix : language.suffix,
         word,
         languagePack.rules,
+        syllableCount,
       ),
     );
   }
   return firstUpper(word.join(''));
 }
 
-export function selectNextSyllable(syllables: string[], word: string[], rules: LanguageRule[]) {
+export function selectNextSyllable(syllables: string[], word: string[], rules: LanguageRule[], syllableCount: number) {
   let syllable = '';
   while (syllable === '') {
     const randomSyllable = syllables[randomizedIndex(syllables.length - 1)];
-    if (evaluateRules(rules, word, randomSyllable) === -1) {
+    if (evaluateRules(rules, word, randomSyllable, syllableCount) === -1) {
       syllable = randomSyllable;
     }
   }
@@ -42,28 +43,33 @@ export function randomizedIndex(upper: number): number {
 /**
  * Returns the index of the failed rule or -1
  */
-export function evaluateRules(rules: LanguageRule[], word: string[], syllable: string) {
-  return rules.findIndex((rule) => !rule(syllable, word));
+export function evaluateRules(rules: LanguageRule[], word: string[], syllable: string, syllableCount: number) {
+  return rules.findIndex((rule) => !rule(syllable, word, syllableCount));
 }
 
 /**
  * Returns all permutations of given syllables for a word
  */
-export function permutationsOf(syllables: string[], word: string[], rules: LanguageRule[]): string[][] {
-  return syllables.filter((syl) => evaluateRules(rules, word, syl) === -1).map((syl) => [...word, syl]);
+export function permutationsOf(
+  syllables: string[],
+  word: string[],
+  rules: LanguageRule[],
+  syllableCount: number,
+): string[][] {
+  return syllables.filter((syl) => evaluateRules(rules, word, syl, syllableCount) === -1).map((syl) => [...word, syl]);
 }
 
 // TODO: add syllableCount for words >3 syllables
 export function allPermutationsOf(syllables: SyllableRoot, rules: LanguageRule[]): string[][] {
   return syllables.prefix
-    .map((syl) => permutationsOf(syllables.infix, [syl], rules))
-    .flatMap((perm) => perm.flatMap((el) => permutationsOf(syllables.suffix, el, rules)));
+    .map((syl) => permutationsOf(syllables.infix, [syl], rules, 2))
+    .flatMap((perm) => perm.flatMap((el) => permutationsOf(syllables.suffix, el, rules, 3)));
 }
 export function allPermutationsOf4(syllables: SyllableRoot, rules: LanguageRule[]): string[][] {
   return syllables.prefix
-    .map((syl) => permutationsOf(syllables.infix, [syl], rules))
-    .flatMap((perm) => perm.map((el) => permutationsOf(syllables.infix, el, rules)))
-    .flatMap((perm) => perm.flatMap((el) => permutationsOf(syllables.suffix, el, rules)));
+    .map((syl) => permutationsOf(syllables.infix, [syl], rules, 2))
+    .flatMap((perm) => perm.map((el) => permutationsOf(syllables.infix, el, rules, 3)))
+    .flatMap((perm) => perm.flatMap((el) => permutationsOf(syllables.suffix, el, rules, 4)));
 }
 
 interface NonPermutations {
@@ -71,15 +77,15 @@ interface NonPermutations {
   syllable: string;
   rule: string;
 }
-function deniedRuleIndezes(rules: LanguageRule[], word: string[], syllable: string) {
-  return rules.map((rule, index) => (!rule(syllable, word) ? index : -1)).filter((idx) => idx > -1);
+function deniedRuleIndezes(rules: LanguageRule[], word: string[], syllable: string, syllableCount: number) {
+  return rules.map((rule, index) => (!rule(syllable, word, syllableCount) ? index : -1)).filter((idx) => idx > -1);
 }
-export function nonPermutationsOf(syllables: string[], word: string[], rules: LanguageRule[]) {
+export function nonPermutationsOf(syllables: string[], word: string[], rules: LanguageRule[], syllableCount: number) {
   return syllables
     .map((syl) => ({
       word,
       syllable: syl,
-      ruleIndezes: deniedRuleIndezes(rules, word, syl),
+      ruleIndezes: deniedRuleIndezes(rules, word, syl, syllableCount),
     }))
     .filter((nonPerms) => nonPerms.ruleIndezes.length > 0)
     .map(({ word, syllable, ruleIndezes }) => {
@@ -91,14 +97,14 @@ export function nonPermutationsOf(syllables: string[], word: string[], rules: La
     });
 }
 export function allNonPermutationsOf(syllables: SyllableRoot, rules: LanguageRule[]): NonPermutations[][] {
-  return syllables.prefix.map((syl) => nonPermutationsOf(syllables.infix, [syl], rules));
+  return syllables.prefix.map((syl) => nonPermutationsOf(syllables.infix, [syl], rules, 2));
 }
 export function allNonPermutationsOf3(syllables: SyllableRoot, rules: LanguageRule[]): NonPermutations[] {
   const allNonPermsPrefixToInfix = allNonPermutationsOf(syllables, rules).flatMap((el) => el);
   return [
     ...allNonPermsPrefixToInfix,
     ...allNonPermutationsOf(syllables, rules).flatMap((perm) =>
-      perm.flatMap((el) => nonPermutationsOf(syllables.suffix, [...el.word, el.syllable], rules)),
+      perm.flatMap((el) => nonPermutationsOf(syllables.suffix, [...el.word, el.syllable], rules, 3)),
     ),
   ];
 }

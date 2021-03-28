@@ -32,12 +32,14 @@ export interface SyllableRoot {
   prefix: string[];
   infix: string[];
   suffix: string[];
+  // add syllable count range
+  // minMaxSyllables: [number, number];
 }
 
 /**
  * Returns false on success, and true if the next syllable is not eligble for the given word
  */
-export type LanguageRule = (nextSyllable: string, word: Syllables) => boolean;
+export type LanguageRule = (nextSyllable: string, word: Syllables, syllableCount: number) => boolean;
 export type Gender = 'male' | 'female';
 export type WordPart = keyof SyllableRoot;
 
